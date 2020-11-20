@@ -15,6 +15,7 @@ https://yfts.herokuapp.com/
 
 - Python 3.6+ & pip
 - Linux only (Maybe it doesn't work on Windows)
+  - Tested to work with WSL
 - ffmpeg
 
 ## Installation
