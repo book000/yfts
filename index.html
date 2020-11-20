@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>YouTube Find Thumbnail Scene</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: #181a1b;
+                color: #eee;
+            }
+
+            h1 {
+                text-align: center;
+            }
+
+            code {
+                border: 1px solid rgba(255, 255, 255, .1);
+                padding: .2em .4em;
+                margin: 0;
+                font-size: 85%;
+                border-radius: 6px;
+            }
+
+            .form-container {
+                width: 80%;
+                text-align: center;
+                margin: 0 auto;
+            }
+
+            #url {
+                width: 78%;
+            }
+
+            #submit {
+                width: 20%;
+            }
+
+            .images {
+                width: 650px;
+                height: 205px;
+                margin: 10px auto;
+                position: relative;
+                text-align: center;
+            }
+
+            .thumbnail-container {
+                position: absolute;
+                left: 0;
+            }
+
+            .thumbnail-container img {
+                width: 320px;
+                height: 180px;
+            }
+
+            .similar-thumbnail-container {
+                position: absolute;
+                right: 0;
+            }
+
+            .similar-thumbnail-container img {
+                width: 320px;
+                height: 180px;
+            }
+
+            .contents {
+                width: 80%;
+                margin: 0 auto;
+            }
+
+            #progressbar {
+                width: 100%;
+            }
+
+            #messages {
+                text-align: left;
+                height: 400px;
+                border: 3px solid #ccc;
+            }
+
+            .message-text {
+                margin-left: 16px;
+                color: #afafaf;
+            }
+
+            .message-subtext {
+                margin-left: 5px;
+                font-size: x-small;
+                color: #afafaf;
+            }
+
+            .message-subtext::before {
+                content: "(";
+            }
+
+            .message-subtext::after {
+                content: ")";
+            }
+
+            .message-warn {
+                color: #ff6347;
+            }
+
+            .message-error {
+                color: #ffa500;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>YouTube Find Thumbnail Scene</h1>
+        <div class="form-container">
+            <from action="#">
+                <input type="url" id="url" placeholder="https://youtu.be/xxxxxxxxx">
+                <input type="submit" id="submit" value="Find!">
+            </from>
+        </div>
+        <div class="images">
+            <div class="thumbnail-container">
+                <img src="" id="thumbnail" />
+                <div>Thumbnail</div>
+            </div>
+            <div class="similar-thumbnail-container">
+                <a href="#" id="similar-thumbnail-link">
+                    <img src="" id="similar-thumbnail" />
+                </a>
+                <div>Similar Thumbnail <span id="similar-thumbnail-rank"></span></div>
+            </div>
+        </div>
+        <div class="contents">
+            <progress id="progressbar" value="0" max="10"></progress>
+            <div id="messages"></div>
+        </div>
+        <script>
+            // https://qiita.com/egnr-in-6matroom/items/37e65bb642d2e158804c
+            const DateFormat = {
+                _fmt: {
+                    "yyyy": function (date) {
+                        return date.getFullYear() + '';
+                    },
+                    "MM": function (date) {
+                        return ('0' + (date.getMonth() + 1)).slice(-2);
+                    },
+                    "dd": function (date) {
+                        return ('0' + date.getDate()).slice(-2);
+                    },
+                    "hh": function (date) {
+                        return ('0' + date.getHours()).slice(-2);
+                    },
+                    "mm": function (date) {
+                        return ('0' + date.getMinutes()).slice(-2);
+                    },
+                    "ss": function (date) {
+                        return ('0' + date.getSeconds()).slice(-2);
+                    }
+                },
+                _priority: ["yyyy", "MM", "dd", "hh", "mm", "ss"],
+                format: function (date, format) {
+                    return this._priority.reduce((res, fmt) => res.replace(fmt, this._fmt[fmt](date)),
+                        format)
+                }
+            };
+
+            const ws = new WebSocket((location.protocol == "https:" ? "wss" : "ws") + "://" + location.host + "/api");
+            const progressbar_element = document.getElementById("progressbar")
+            const message_element = document.getElementById("message")
+            ws.onopen = function (event) {
+                message("Connected API.", "APIに接続しました。", "info");
+                console.log(event.data)
+            }
+            ws.onerror = function (event) {
+                message("Error.", "エラーが発生しました。", "error");
+                console.error(event.data)
+            }
+
+            ws.onmessage = function (event) {
+                console.log(event)
+                const data = JSON.parse(event.data);
+                message(data.message, data.message_ja, data.status ? "info" : "warn")
+                document.getElementById("progressbar").value = data.process_code;
+                console.log(data)
+
+                if (data.status && data.process_code == 2) {
+                    // Get Video Infomation completed.
+                    document.getElementById("thumbnail").src =
+                        "https://img.youtube.com/vi/" + data.info.vid + "/maxresdefault.jpg";
+                }
+                if (data.status && data.process_code == 10) {
+                    document.getElementById("similar-thumbnail-link").href = "https://youtu.be/" + data.vid +
+                        "?t=" + data.data.best[0];
+                    time = new Date(data.data.best[0] * 1000).toISOString().substr(11, 8)
+                    document.getElementById("similar-thumbnail-rank").innerHTML =
+                        " (" + time + " | " + (100 - data.data.best[1]) + "%)"
+                    document.getElementById("similar-thumbnail").src = "data:image/jpeg;base64," + data.best_image;
+                    document.getElementById("submit").disabled = false;
+
+                    message("The closest video time was " + time + "(" + (100 - data.data.best[1]) + "%).",
+                        "最も近い動画箇所は " + time + "(" + (100 - data.data.best[1]) + "%) でした。", "info")
+                }
+            }
+
+            ws.onerror = function () {
+                message("Connection closed.", "APIから切断しました。", "info");
+            }
+
+            function message(text, subtext, level) {
+                const messages = document.getElementById("messages");
+                const message_line = document.createElement("div");
+                message_line.classList.add("message-line");
+
+                const message_date = document.createElement("span");
+                message_date.classList.add("message-date");
+                message_date.textContent = DateFormat.format(new Date(), "hh:mm:ss");
+                message_line.appendChild(message_date);
+
+                const message_text = document.createElement("span");
+                message_text.classList.add("message-text");
+                message_text.innerHTML = text;
+                message_text.classList.add("message-" + level);
+                message_line.appendChild(message_text);
+
+                const message_subtext = document.createElement("span");
+                message_subtext.classList.add("message-subtext");
+                message_subtext.innerHTML = subtext;
+                message_subtext.classList.add("message-" + level);
+                message_line.appendChild(message_subtext);
+
+                messages.appendChild(message_line);
+            }
+
+            document.getElementById("submit").onclick = function () {
+                ws.send(document.getElementById("url").value);
+                document.getElementById("submit").disabled = true;
+            }
+        </script>
+    </body>
+</html>
