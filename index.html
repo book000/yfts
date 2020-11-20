@@ -266,7 +266,7 @@
                 }
             }
 
-            ws.onerror = function () {
+            ws.onclose = function () {
                 message("Connection closed.", "APIから切断しました。", "info");
             }
 
