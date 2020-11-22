@@ -13,7 +13,10 @@ import base64
 import threading
 import time
 
-dirpath = "/tmp"
+dirpath = "/tmp/yfts"
+
+if not path.exists(dirpath):
+    os.mkdir(dirpath)
 
 if not path.exists(dirpath + "/images/"):
     os.mkdir(dirpath + "/images/")
@@ -319,7 +322,7 @@ async def youtubeThumb(ws):
 
             # Process 10 : Whether find a scene that looks like a thumbnail
             similars = findThumbnail(vid)
-            if similars.count == 0:
+            if len(similars) == 0:
                 print("[10] Not found a scene that looks like a thumbnail.")
                 await ws.send_json({
                     "status": False,
@@ -370,6 +373,7 @@ def awake():
 
 
 t = threading.Thread(target=awake)
+t.setDaemon(True)
 t.start()
 
 api.run(address="0.0.0.0", port=int(os.environ.get("PORT", 5000)), workers=1)
