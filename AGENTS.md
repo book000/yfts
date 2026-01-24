@@ -25,3 +25,8 @@
 - ログに機密情報を出力しない。
 
 ## リポジトリ固有
+- **runtime**: Linux only (WSL compatible)
+- **requirements**: Python 3.6+, ffmpeg
+- **default_port**: localhost:5000
+- **algorithm**: Perceptual Hash for image similarity (limited accuracy for custom thumbnails)
+- **deployment**: Demo on Heroku (slow due to video processing overhead)

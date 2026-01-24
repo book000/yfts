@@ -15,7 +15,17 @@
 - 日本語と英数字の間には半角スペースを入れる。
 
 ## プロジェクト概要
-- 目的: YouTube動画内でサムネイル画像に設定されている箇所を探します。 Find the part set in the thumbnail image in the YouTube video.
+Find and display the timestamp in YouTube videos where the thumbnail image appears. Uses perceptual hashing for image similarity matching.
+
+### 技術スタック
+- **言語**: Python
+- **フレームワーク**: Flask/Responder
+- **パッケージマネージャー**: pip
+- **主要な依存関係**:
+  - youtube_dl
+  - imagehash
+  - ffmpeg_python
+  - responder
 
 ## コーディング規約
 - フォーマット: 既存設定（ESLint / Prettier / formatter）に従う。
@@ -23,12 +33,14 @@
 - コメント言語: 日本語
 - エラーメッセージ: 英語
 
-## 開発コマンド
+### 開発コマンド
 ```bash
-# 依存関係のインストール
-pip install -r requirements.txt
+# install
+pip3 install -r requirements.txt
 
-# 開発 / テスト / Lint は README を確認してください
+# dev
+python3 main.py
+
 ```
 
 ## 注意事項
@@ -37,3 +49,8 @@ pip install -r requirements.txt
 - 既存のプロジェクトルールがある場合はそれを優先する。
 
 ## リポジトリ固有
+- **runtime**: Linux only (WSL compatible)
+- **requirements**: Python 3.6+, ffmpeg
+- **default_port**: localhost:5000
+- **algorithm**: Perceptual Hash for image similarity (limited accuracy for custom thumbnails)
+- **deployment**: Demo on Heroku (slow due to video processing overhead)

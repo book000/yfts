@@ -1,7 +1,7 @@
 # GitHub Copilot Instructions
 
 ## プロジェクト概要
-- 目的: YouTube動画内でサムネイル画像に設定されている箇所を探します。 Find the part set in the thumbnail image in the YouTube video.
+Find and display the timestamp in YouTube videos where the thumbnail image appears. Uses perceptual hashing for image similarity matching.
 
 ## 共通ルール
 - 会話は日本語で行う。
@@ -12,7 +12,7 @@
 
 ## 技術スタック
 - 言語: Python
-- パッケージマネージャー: pnpm 優先（ロックファイルに従う）。
+- パッケージマネージャー: pip
 
 ## コーディング規約
 - フォーマット: 既存設定（ESLint / Prettier / formatter）に従う。
@@ -23,12 +23,14 @@
 - TypeScript 使用時は strict 前提とし、`skipLibCheck` で回避しない。
 - 関数やインターフェースには docstring（JSDoc など）を記載する。
 
-## 開発コマンド
+### 開発コマンド
 ```bash
-# 依存関係のインストール
-pip install -r requirements.txt
+# install
+pip3 install -r requirements.txt
 
-# 開発 / テスト / Lint は README を確認してください
+# dev
+python3 main.py
+
 ```
 
 ## テスト方針
@@ -39,5 +41,12 @@ pip install -r requirements.txt
 - ログに機密情報を出力しない。
 
 ## ドキュメント更新
+- 実装確定後、同一コミットまたは追加コミットで更新する。
+- README、API ドキュメント、コメント等は常に最新状態を保つ。
 
 ## リポジトリ固有
+- **runtime**: Linux only (WSL compatible)
+- **requirements**: Python 3.6+, ffmpeg
+- **default_port**: localhost:5000
+- **algorithm**: Perceptual Hash for image similarity (limited accuracy for custom thumbnails)
+- **deployment**: Demo on Heroku (slow due to video processing overhead)
