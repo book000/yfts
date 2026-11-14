@@ -110,33 +110,6 @@ def getInfomation(url):
         return e
 
 
-def main(url):
-    info = getInfomation(url)
-    title = info.get("title", None)
-    uploader = info.get("uploader", None)
-    vid = info.get("id", None)
-
-    if vid is None:
-        print("Could not find video ID")
-        return
-
-    print(title + " - " + uploader)
-
-    if not path.exists(dirpath + "/images/"):
-        os.mkdir(dirpath + "/images/")
-
-    if not path.exists(dirpath + "/thumbnails/"):
-        os.mkdir(dirpath + "/thumbnails/")
-
-    if not path.exists(dirpath + "/videos/"):
-        os.mkdir(dirpath + "/videos/")
-
-    print(downloadThumbnail(vid))
-    print(downloadVideo(vid))
-    print(convertVideoToImage(vid))
-    print(findThumbnail(vid))
-
-
 api = responder.API()
 clients = {}
 
