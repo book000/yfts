@@ -29,8 +29,6 @@ Then open http://localhost:5000/ and submit a YouTube URL. The `PORT` environmen
 
 The working directory for downloaded thumbnails, videos and extracted frames is the `dirpath` variable in `main.py` (default `/tmp/yfts`). Change it there if necessary.
 
-Note that `main.py` also starts a background thread that requests `https://yfts.herokuapp.com/` every 5 minutes to keep a hosted instance awake. That is only meaningful for the original Heroku deployment, which is no longer reachable.
-
 ## Disclaimer
 
 **The author is not responsible for any problems caused by the user using this project.**

@@ -28,7 +28,6 @@ Requires Python 3.6+, ffmpeg and Linux (WSL works). There is no test suite, lint
   - `GET /` serves `index.html`.
   - WebSocket `/api` (`youtubeThumb`) runs the pipeline step by step and sends one JSON message per step with `status`, `process_code` (0-10), `message` and `message_ja`.
   - Pipeline helpers: `getInfomation` (youtube_dl metadata), `downloadThumbnail` (requests, `maxresdefault.jpg`), `downloadVideo` (youtube_dl, webm), `convertVideoToImage` (ffmpeg, 1 fps), `findThumbnail` (`imagehash.phash`), `getImageBase64`.
-  - A daemon thread (`awake`) pings a hardcoded Heroku URL every 5 minutes.
 - `index.html`: the whole frontend (inline CSS and vanilla JS). Opens a WebSocket to `/api`, sends the URL, and renders per-step messages, a progress bar, the thumbnail and the best-matching frame (inline base64).
 - `Procfile`, `runtime.txt`, `requirements.txt`: Heroku deployment metadata.
 - `dirpath` in `main.py` (`/tmp/yfts`) is the working directory holding `thumbnails/`, `videos/` and `images/`. Change it in the code, not through an environment variable.

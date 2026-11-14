@@ -10,8 +10,6 @@ import responder
 import json
 import asyncio
 import base64
-import threading
-import time
 
 dirpath = "/tmp/yfts"
 
@@ -360,20 +358,5 @@ async def youtubeThumb(ws):
         await ws.close()
         del clients[key]
 
-
-def awake():
-    while True:
-        try:
-            print("Start Awaking")
-            requests.get("https://yfts.herokuapp.com/")
-            print("End")
-        except:
-            print("error")
-        time.sleep(300)
-
-
-t = threading.Thread(target=awake)
-t.setDaemon(True)
-t.start()
 
 api.run(address="0.0.0.0", port=int(os.environ.get("PORT", 5000)), workers=1)
